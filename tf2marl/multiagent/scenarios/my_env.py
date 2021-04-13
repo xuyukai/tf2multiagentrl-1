@@ -13,6 +13,8 @@ class Scenario(BaseScenario):
         num_friends = 3  # ?the number of friends
         num_agents = num_adversaries + num_good_agents + num_friends  # ?add num_friends in agents number
         world.n_adversaries = num_adversaries
+        world.n_good_agents = num_good_agents
+        world.n_friends = num_friends
         # num_landmarks = 2  #?elimate landmark
         # add agents
         world.agents = [Agent() for i in range(num_agents)]
@@ -68,17 +70,21 @@ class Scenario(BaseScenario):
         #     landmark.color = np.array([0.25, 0.25, 0.25])
         # set random initial states
         for agent in world.agents:
-            #agent.state.p_pos = np.random.uniform(-0.9, +0.9, world.dim_p)
+            # agent.state.p_pos = np.random.uniform(-0.9, +0.9, world.dim_p)
             agent.state.p_vel = np.zeros(world.dim_p)
             agent.state.c = np.zeros(world.dim_c)
             if not agent.adversary and not agent.friend:  # 是good_agent
-                agent.state.p_pos = np.random.uniform(-0.4, +0.4, world.dim_p)
+                agent.state.p_pos = np.random.uniform(-0.3, +0.3, world.dim_p)
             elif agent.friend:
-                agent.state.p_pos = [np.random.uniform(0.4, 0.6) * np.random.choice((-1, 1)),
-                                     np.random.uniform(0.4, 0.6) * np.random.choice((-1, 1))]
+                pos = []
+                for i in range(world.dim_p):
+                    pos.append(np.random.uniform(0.3, 0.5) * np.random.choice((-1, 1)))
+                agent.state.p_pos = np.array(pos)
             else:
-                agent.state.p_pos = [np.random.uniform(0.6, 0.9) * np.random.choice((-1, 1)),
-                                     np.random.uniform(0.6, 0.9) * np.random.choice((-1, 1))]
+                pos = []
+                for i in range(world.dim_p):
+                    pos.append(np.random.uniform(0.5, 0.9) * np.random.choice((-1, 1)))
+                agent.state.p_pos = np.array(pos)
         # for i, landmark in enumerate(world.landmarks):
         #     if not landmark.boundary:
         #         landmark.state.p_pos = np.random.uniform(-0.9, +0.9, world.dim_p)

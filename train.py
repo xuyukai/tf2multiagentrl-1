@@ -245,7 +245,43 @@ def get_agents(_run, env, num_adversaries, good_policy, adv_policy, lr, batch_si
         else:
             raise RuntimeError('Invalid Class')
         agents.append(agent)
-    for agent_idx in range(num_adversaries, env.n):
+    for agent_idx in range(num_adversaries, num_adversaries+env.n_good_agents-1):
+        if good_policy == 'maddpg':
+            agent = MADDPGAgent(env.observation_space, env.action_space, agent_idx, batch_size,
+                                buff_size,
+                                lr, num_layers,
+                                num_units, gamma, tau, priori_replay, alpha=alpha,
+                                max_step=num_episodes * max_episode_len, initial_beta=beta,
+                                _run=_run)
+        elif good_policy == 'matd3':
+            agent = MATD3Agent(env.observation_space, env.action_space, agent_idx, batch_size,
+                               buff_size,
+                               lr, num_layers, num_units, gamma, tau, priori_replay, alpha=alpha,
+                               max_step=num_episodes * max_episode_len, initial_beta=beta,
+                               policy_update_freq=policy_update_rate,
+                               target_policy_smoothing_eps=critic_action_noise_stddev, _run=_run
+                               )
+        elif adv_policy == 'mad3pg':
+            agent = MAD3PGAgent(env.observation_space, env.action_space, agent_idx, batch_size,
+                                buff_size,
+                                lr, num_layers,
+                                num_units, gamma, tau, priori_replay, alpha=alpha,
+                                max_step=num_episodes * max_episode_len, initial_beta=beta,
+                                num_atoms=num_atoms, min_val=min_val, max_val=max_val,
+                                _run=_run
+                                )
+        elif good_policy == 'masac':
+            agent = MASACAgent(env.observation_space, env.action_space, agent_idx, batch_size,
+                               buff_size,
+                               lr, num_layers, num_units, gamma, tau, priori_replay, alpha=alpha,
+                               max_step=num_episodes * max_episode_len, initial_beta=beta,
+                               entropy_coeff=entropy_coeff, policy_update_freq=policy_update_rate,
+                               _run=_run
+                               )
+        else:
+            raise RuntimeError('Invalid Class')
+        agents.append(agent)
+    for agent_idx in range(num_adversaries+env.n_good_agents, env.n):
         if good_policy == 'maddpg':
             agent = MADDPGAgent(env.observation_space, env.action_space, agent_idx, batch_size,
                                 buff_size,
